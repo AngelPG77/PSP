@@ -1,0 +1,22 @@
+SJF Escenario 1
+
+Secuencia = P3 -> P2 -> P4 -> P1
+
+P1 WT = 9
+P2 WT = 1
+P3 WT = 0
+P4 WT = 5
+
+WT Total = 15
+
+SJF Escenario 2
+
+Secuencia = P3 -> P4 -> P2 -> P5 -> P1
+
+P1 WT = 10
+P2 WT = 4
+P3 WT = 0
+P4 WT = 1
+P5 WT = 2
+
+WT Total = 17

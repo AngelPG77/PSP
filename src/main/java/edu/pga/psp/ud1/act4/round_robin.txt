@@ -1,0 +1,24 @@
+
+Round Robin Escenario 1 Quantum 3
+
+Secuencia = P1 -> P2 -> P3 -> P1 -> P2
+
+P1 WT = 5
+P2 WT = 6
+P3 WT = 6
+
+WT Total = 17
+
+Round Robin Escenario 2 Quantum 2
+
+Secuencia = P2 -> P4 -> P2 -> P3 -> P1 -> P1
+
+P1 WT = 0
+P2 WT = 2
+P3 WT = 4
+P4 WT = 2
+
+WT Total = 8
+
+
+

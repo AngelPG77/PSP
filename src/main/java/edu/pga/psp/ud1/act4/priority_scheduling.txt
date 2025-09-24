@@ -1,0 +1,20 @@
+Priority Scheduling Escenario 1
+
+Secuencia = P2 -> P3 -> P1
+
+P1 WT = 9
+P2 WT = 0
+P3 WT = 4
+
+WT Total = 13
+
+Priority Scheduling Escenario 2
+
+Secuencia = P1 -> P2 -> P3 -> P4
+
+P1 WT = 0
+P2 WT = 0
+P3 WT = 1
+P4 WT = 14
+
+WT Total = 15
