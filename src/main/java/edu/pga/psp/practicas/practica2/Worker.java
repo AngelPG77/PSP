@@ -39,7 +39,7 @@ public class Worker {
             }
 
 
-            Path resourcesDir = Paths.get("src/main/resources");
+            Path resourcesDir = Paths.get("src/main/resources/temp");
             if (!Files.exists(resourcesDir)) {
                 Files.createDirectories(resourcesDir);
             }
@@ -48,7 +48,7 @@ public class Worker {
             Path tempFile = Files.createTempFile(resourcesDir, "bloque_", ".txt");
             try (BufferedWriter bw = Files.newBufferedWriter(tempFile)) {
                 for (Map.Entry<String, Integer> el : frecuencia.entrySet()) {
-                    bw.write(el.getKey() + " " + el.getValue());
+                    bw.write(el.getKey() + "," + el.getValue());
                     bw.newLine();
                 }
             }

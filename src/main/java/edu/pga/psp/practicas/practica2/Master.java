@@ -20,7 +20,7 @@ public class Master {
         String url = sc.nextLine().trim();
         System.out.println("¿En cuantos procesos quiere usted dividir el trabajo?");
         int nProcesos = Integer.parseInt(sc.nextLine().trim());
-
+        Fusioner fusioner = new Fusioner();
 
         List<Worker> workers = new ArrayList<>();
         int lineasBloque = dividirArchivo(nProcesos, contarLineas(new File(url)));
@@ -39,6 +39,8 @@ public class Master {
                 e.printStackTrace();
             }
         }
+
+        fusioner.leerArchivosTemp();
 
     }
 
