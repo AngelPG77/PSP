@@ -39,9 +39,19 @@ public class Master {
                 e.printStackTrace();
             }
         }
+         /* FUSIONER IMPRIME POR PANTALLA
+         fusioner.leerArchivosTemp();
+          */
 
-        fusioner.leerArchivosTemp();
-
+        System.out.println("Top 5 palabras más frecuentes:");
+        try(BufferedReader bf = new BufferedReader(new FileReader(fusioner.leerArchivosTemp()))){
+            String line;
+            while ((line = bf.readLine()) != null){
+                System.out.println(line);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     static int contarLineas(File file){
