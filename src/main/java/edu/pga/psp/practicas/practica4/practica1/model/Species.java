@@ -3,6 +3,8 @@ package edu.pga.psp.practicas.practica4.practica1.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Species {
 
     @Expose
@@ -41,10 +43,9 @@ public class Species {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private People[] peopleArr;
+    private List<People> peopleArr;
     @Expose(deserialize = false)
-    private Films[] filmsArr;
-
+    private List<Films> filmsArr;
 
     public String getName() {
         return name;
@@ -166,19 +167,19 @@ public class Species {
         this.edited = edited;
     }
 
-    public People[] getPeopleArr() {
+    public List<People> getPeopleArr() {
         return peopleArr;
     }
 
-    public void setPeopleArr(People[] peopleArr) {
+    public void setPeopleArr(List<People> peopleArr) {
         this.peopleArr = peopleArr;
     }
 
-    public Films[] getFilmsArr() {
+    public List<Films> getFilmsArr() {
         return filmsArr;
     }
 
-    public void setFilmsArr(Films[] filmsArr) {
+    public void setFilmsArr(List<Films> filmsArr) {
         this.filmsArr = filmsArr;
     }
 

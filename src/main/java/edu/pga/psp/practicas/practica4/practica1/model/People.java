@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class People {
 
@@ -44,14 +45,13 @@ public class People {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private Films[] filmsArr;
+    private List<Films> filmsArr;
     @Expose(deserialize = false)
-    private Species[] speciesArr;
+    private List<Species> speciesArr;
     @Expose(deserialize = false)
-    private Starships[] starshipsArr;
+    private List<Starships> starshipsArr;
     @Expose(deserialize = false)
-    private Vehicles[] vehiclesArr;
-
+    private List<Vehicles> vehiclesArr;
 
     public String getName() {
         return name;
@@ -181,35 +181,35 @@ public class People {
         this.edited = edited;
     }
 
-    public Films[] getFilmsArr() {
+    public List<Films> getFilmsArr() {
         return filmsArr;
     }
 
-    public void setFilmsArr(Films[] filmsArr) {
+    public void setFilmsArr(List<Films> filmsArr) {
         this.filmsArr = filmsArr;
     }
 
-    public Species[] getSpeciesArr() {
+    public List<Species> getSpeciesArr() {
         return speciesArr;
     }
 
-    public void setSpeciesArr(Species[] speciesArr) {
+    public void setSpeciesArr(List<Species> speciesArr) {
         this.speciesArr = speciesArr;
     }
 
-    public Starships[] getStarshipsArr() {
+    public List<Starships> getStarshipsArr() {
         return starshipsArr;
     }
 
-    public void setStarshipsArr(Starships[] starshipsArr) {
+    public void setStarshipsArr(List<Starships> starshipsArr) {
         this.starshipsArr = starshipsArr;
     }
 
-    public Vehicles[] getVehiclesArr() {
+    public List<Vehicles> getVehiclesArr() {
         return vehiclesArr;
     }
 
-    public void setVehiclesArr(Vehicles[] vehiclesArr) {
+    public void setVehiclesArr(List<Vehicles> vehiclesArr) {
         this.vehiclesArr = vehiclesArr;
     }
 
@@ -221,8 +221,8 @@ public class People {
                 "  - Género: " + gender + "\n" +
                 "  - Altura: " + height + "\n" +
                 "  - Origen: " + homeworld + "\n" +
-                "  - Naves: " + Arrays.stream(starshipsArr).map(Starships::getName).toList() + "\n" +
-                "  - Vehículos: " + Arrays.stream(vehiclesArr).map(Vehicles::getName).toList();
+                "  - Naves: " + starshipsArr.stream().map(Starships::getName).toList() + "\n" +
+                "  - Vehículos: " + vehiclesArr.stream().map(Vehicles::getName).toList();
     }
 
 }
