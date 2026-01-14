@@ -3,6 +3,7 @@ package edu.pga.psp.practicas.practica4.practica1.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Planets {
@@ -39,7 +40,7 @@ public class Planets {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private List<People> residentsArr;
+    private List<People> residentsArr ;
     @Expose(deserialize = false)
     private List<Films> filmsArr;
 

@@ -2,8 +2,7 @@ package edu.pga.psp.practicas.practica4.practica1;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import edu.pga.psp.practicas.practica4.practica1.model.FilmReport;
-import edu.pga.psp.practicas.practica4.practica1.model.Films;
+import edu.pga.psp.practicas.practica4.practica1.model.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class SWCrawler {
     HttpClient client = HttpClient.newHttpClient();
@@ -32,8 +32,28 @@ public class SWCrawler {
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(e -> gson.fromJson(e, Films.class));
-                //.thenCompose(film -> ); TODO
+                .thenApply(e -> gson.fromJson(e, Films.class))
+                .thenCompose(film -> {
+                            CompletableFuture<List<Planets>> listPlanets = getLists(film.getPlanets(), Planets.class);
+                            CompletableFuture<List<Species>> listSpecies = getLists(film.getSpecies(), Species.class);
+                            CompletableFuture<List<People>> listPeople = getLists(film.getCharacters(), People.class)
+                                    .thenCompose(character ->{
+                                        CompletableFuture<List<Starships>> listNave = getLists(film.getStarships(), Starships.class);
+                                        CompletableFuture<List<Vehicles>> listVehicle = getLists(film.getVehicles(), Vehicles.class);
+                                        return CompletableFuture.allOf(listNave, listVehicle)
+                                                .thenApply(v -> {
+                                                    person.setVehiclesList(listVehicle.join());
+                                                    person.setStarshipsList(listNave.join());
+                                                    return person;
+                                                });
+
+                                    });
+                            return new Films(
+
+                            );
+
+                        }
+                )
 
 
     }
