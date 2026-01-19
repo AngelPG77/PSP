@@ -24,7 +24,7 @@ public class SWCrawler {
     HttpRequest requestObject;
     final String URL_BASE = "https://swapi.info/api/";
 
-    public CompletableFuture<Films> crawlFilm(int filmId) {
+    public CompletableFuture<FilmReport> crawlFilm(int filmId) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(URL_BASE + "films/" + filmId))
                 .GET()
@@ -34,28 +34,31 @@ public class SWCrawler {
                 .thenApply(HttpResponse::body)
                 .thenApply(e -> gson.fromJson(e, Films.class))
                 .thenCompose(film -> {
+                            CompletableFuture<Films> filmFuture = CompletableFuture.completedFuture(film);
                             CompletableFuture<List<Planets>> listPlanets = getLists(film.getPlanets(), Planets.class);
                             CompletableFuture<List<Species>> listSpecies = getLists(film.getSpecies(), Species.class);
                             CompletableFuture<List<People>> listPeople = getLists(film.getCharacters(), People.class)
                                     .thenCompose(character ->{
-                                        CompletableFuture<List<Starships>> listNave = getLists(film.getStarships(), Starships.class);
-                                        CompletableFuture<List<Vehicles>> listVehicle = getLists(film.getVehicles(), Vehicles.class);
-                                        return CompletableFuture.allOf(listNave, listVehicle)
-                                                .thenApply(v -> {
-                                                    person.setVehiclesList(listVehicle.join());
-                                                    person.setStarshipsList(listNave.join());
-                                                    return person;
-                                                });
+                                        character.forEach( e -> {
+                                            CompletableFuture<List<Starships>> listNave = getLists(film.getStarships(), Starships.class);
+                                            CompletableFuture<List<Vehicles>> listVehicle = getLists(film.getVehicles(), Vehicles.class);
+                                            e.setStarshipsArr(listNave.join());
+                                            e.setVehiclesArr(listVehicle.join());
+                                        });
+                                        return CompletableFuture.completedFuture(character);
 
                                     });
-                            return new Films(
 
-                            );
+                            Films finalFilm = filmFuture.join();
+                            finalFilm.setPlanetsArr(listPlanets.join());
+                            finalFilm.setSpeciesArr(listSpecies.join());
+                            finalFilm.setCharactersArr(listPeople.join());
 
+                            FilmReport report = new FilmReport(finalFilm);
+                            return CompletableFuture.completedFuture(report);
                         }
-                )
 
-
+                );
     }
 
     public <T> CompletableFuture<List<T>> getLists(String[] urls, Class<T> c) {

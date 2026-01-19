@@ -3,6 +3,7 @@ package edu.pga.psp.practicas.practica4.practica1.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,15 +42,15 @@ public class Films {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private List<Species> speciesArr;
+    private List<Species> speciesArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Starships> starshipsArr;
+    private List<Starships> starshipsArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Vehicles> vehiclesArr;
+    private List<Vehicles> vehiclesArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<People> charactersArr;
+    private List<People> charactersArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Planets> planetsArr;
+    private List<Planets> planetsArr = new ArrayList<>();
 
 
     public String getTitle() {
@@ -202,18 +203,6 @@ public class Films {
 
     public void setPlanetsArr(List<Planets> planetsArr) {
         this.planetsArr = planetsArr;
-    }
-
-
-    public void print() {
-        System.out.println("\n=== INFORME DE LA PELÍCULA: " + title + " ===");
-        System.out.println("Planetas(" + planetsArr.size() + "): ");
-        planetsArr.forEach(e -> System.out.println(e.toString()));
-        System.out.println("Especies(" + species.length + "): ");
-        getSpeciesArr().forEach(e -> System.out.println(e.toString()));
-        System.out.println("Personajes(" + characters.length + "): ");
-        charactersArr.forEach(e -> System.out.println(e.toString()));
-
     }
 
 

@@ -3,6 +3,7 @@ package edu.pga.psp.practicas.practica4.practica1.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,13 +46,13 @@ public class People {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private List<Films> filmsArr;
+    private List<Films> filmsArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Species> speciesArr;
+    private List<Species> speciesArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Starships> starshipsArr;
+    private List<Starships> starshipsArr = new ArrayList<>();
     @Expose(deserialize = false)
-    private List<Vehicles> vehiclesArr;
+    private List<Vehicles> vehiclesArr = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -220,7 +221,6 @@ public class People {
                 "  - Color de pelo: " + hairColor + "\n" +
                 "  - Género: " + gender + "\n" +
                 "  - Altura: " + height + "\n" +
-                "  - Origen: " + homeworld + "\n" +
                 "  - Naves: " + starshipsArr.stream().map(Starships::getName).toList() + "\n" +
                 "  - Vehículos: " + vehiclesArr.stream().map(Vehicles::getName).toList();
     }

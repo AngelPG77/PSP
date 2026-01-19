@@ -40,9 +40,9 @@ public class Planets {
     @Expose
     private String edited;
     @Expose(deserialize = false)
-    private List<People> residentsArr ;
+    private List<People> residentsArr = new ArrayList<>() ;
     @Expose(deserialize = false)
-    private List<Films> filmsArr;
+    private List<Films> filmsArr = new ArrayList<>();
 
     public String getName() {
         return name;
