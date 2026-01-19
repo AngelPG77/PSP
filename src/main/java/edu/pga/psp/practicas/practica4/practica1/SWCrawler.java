@@ -34,6 +34,8 @@ public class SWCrawler {
                 .thenApply(HttpResponse::body)
                 .thenApply(e -> gson.fromJson(e, Films.class))
                 .thenCompose(film -> {
+                           try {
+                               Thread.sleep(500);
                             CompletableFuture<Films> filmFuture = CompletableFuture.completedFuture(film);
                             CompletableFuture<List<Planets>> listPlanets = getLists(film.getPlanets(), Planets.class);
                             CompletableFuture<List<Species>> listSpecies = getLists(film.getSpecies(), Species.class);
@@ -46,7 +48,6 @@ public class SWCrawler {
                                             e.setVehiclesArr(listVehicle.join());
                                         });
                                         return CompletableFuture.completedFuture(character);
-
                                     });
 
                             Films finalFilm = filmFuture.join();
@@ -56,23 +57,28 @@ public class SWCrawler {
 
                             FilmReport report = new FilmReport(finalFilm);
                             return CompletableFuture.completedFuture(report);
-                        }
-
+                        } catch (Exception e) {
+                               throw new RuntimeException(e);
+                           }
+                }
                 );
     }
 
     public <T> CompletableFuture<List<T>> getLists(String[] urls, Class<T> c) {
-        List<CompletableFuture<T>> listFutures = Arrays.stream(urls)
-                .map(url -> {
-                            requestObject = HttpRequest.newBuilder()
-                                    .uri(URI.create(url))
-                                    .GET()
-                                    .build();
-                            return client.sendAsync(requestObject, HttpResponse.BodyHandlers.ofString())
-                                    .thenApply(HttpResponse::body)
-                                    .thenApply(e -> gson.fromJson(e, c));
-                        }
-                ).toList();
+
+
+            List<CompletableFuture<T>> listFutures = Arrays.stream(urls)
+                    .map(url -> {
+
+                                requestObject = HttpRequest.newBuilder()
+                                        .uri(URI.create(url))
+                                        .GET()
+                                        .build();
+                                return client.sendAsync(requestObject, HttpResponse.BodyHandlers.ofString())
+                                        .thenApply(HttpResponse::body)
+                                        .thenApply(e -> gson.fromJson(e, c));
+                            }
+                    ).toList();
         return CompletableFuture.allOf(listFutures.toArray(new CompletableFuture[0])).thenApply(e-> listFutures.stream().map(CompletableFuture::join).toList());
     }
 
