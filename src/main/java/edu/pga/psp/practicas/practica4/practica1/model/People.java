@@ -221,8 +221,10 @@ public class People {
                 "  - Color de pelo: " + hairColor + "\n" +
                 "  - Género: " + gender + "\n" +
                 "  - Altura: " + height + "\n" +
-                "  - Naves: " + starshipsArr.stream().map(Starships::getName).toList() + "\n" +
-                "  - Vehículos: " + vehiclesArr.stream().map(Vehicles::getName).toList();
-    }
+                "  - Naves: " + (starshipsArr.isEmpty() ? "Ninguna" :
+                starshipsArr.stream().map(Starships::getName).collect(java.util.stream.Collectors.joining(", "))) + "\n" +
 
-}
+                "  - Vehículos: " + (vehiclesArr.isEmpty() ? "Ninguno" :
+                vehiclesArr.stream().map(Vehicles::getName).collect(java.util.stream.Collectors.joining(", ")));
+
+}}

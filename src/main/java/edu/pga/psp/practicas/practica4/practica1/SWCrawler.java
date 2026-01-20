@@ -11,8 +11,8 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class SWCrawler {
     HttpClient client = HttpClient.newHttpClient();
@@ -21,7 +21,7 @@ public class SWCrawler {
             .setDateFormat("dd-MM-yyyy HH:mm:ss")
             .serializeNulls()
             .create();
-    HttpRequest requestObject;
+
     final String URL_BASE = "https://swapi.info/api/";
 
     public CompletableFuture<FilmReport> crawlFilm(int filmId) {
@@ -34,52 +34,65 @@ public class SWCrawler {
                 .thenApply(HttpResponse::body)
                 .thenApply(e -> gson.fromJson(e, Films.class))
                 .thenCompose(film -> {
-                           try {
-                               Thread.sleep(500);
-                            CompletableFuture<Films> filmFuture = CompletableFuture.completedFuture(film);
-                            CompletableFuture<List<Planets>> listPlanets = getLists(film.getPlanets(), Planets.class);
-                            CompletableFuture<List<Species>> listSpecies = getLists(film.getSpecies(), Species.class);
-                            CompletableFuture<List<People>> listPeople = getLists(film.getCharacters(), People.class)
-                                    .thenCompose(character ->{
-                                        character.forEach( e -> {
-                                            CompletableFuture<List<Starships>> listNave = getLists(film.getStarships(), Starships.class);
-                                            CompletableFuture<List<Vehicles>> listVehicle = getLists(film.getVehicles(), Vehicles.class);
-                                            e.setStarshipsArr(listNave.join());
-                                            e.setVehiclesArr(listVehicle.join());
-                                        });
-                                        return CompletableFuture.completedFuture(character);
-                                    });
+                    CompletableFuture<List<Planets>> listPlanets = getLists(film.getPlanets(), Planets.class);
+                    CompletableFuture<List<Species>> listSpecies = getLists(film.getSpecies(), Species.class);
+                    CompletableFuture<List<People>> listPeople = getLists(film.getCharacters(), People.class)
+                            .thenCompose(characters -> {
+                                characters.forEach(e -> {
+                                    CompletableFuture<List<Starships>> listNave = getLists(e.getStarships(), Starships.class);
+                                    CompletableFuture<List<Vehicles>> listVehicle = getLists(e.getVehicles(), Vehicles.class);
 
-                            Films finalFilm = filmFuture.join();
-                            finalFilm.setPlanetsArr(listPlanets.join());
-                            finalFilm.setSpeciesArr(listSpecies.join());
-                            finalFilm.setCharactersArr(listPeople.join());
+                                    e.setStarshipsArr(listNave.join());
+                                    e.setVehiclesArr(listVehicle.join());
+                                });
+                                return CompletableFuture.completedFuture(characters);
+                            });
 
-                            FilmReport report = new FilmReport(finalFilm);
-                            return CompletableFuture.completedFuture(report);
-                        } catch (Exception e) {
-                               throw new RuntimeException(e);
-                           }
-                }
-                );
+                    return CompletableFuture.allOf(listPlanets, listSpecies, listPeople)
+                            .thenApply(v -> {
+                                film.setPlanetsArr(listPlanets.join());
+                                film.setSpeciesArr(listSpecies.join());
+                                film.setCharactersArr(listPeople.join());
+                                return new FilmReport(film);
+                            });
+                })
+                .exceptionally(ex -> {
+                    System.err.println("Error critico: " + ex.getMessage());
+                    return null;
+                });
     }
 
     public <T> CompletableFuture<List<T>> getLists(String[] urls, Class<T> c) {
+        if (urls == null) return CompletableFuture.completedFuture(Collections.emptyList());
 
+        List<CompletableFuture<T>> listFutures = Arrays.stream(urls)
+                .distinct()
+                .map(url -> {
+                    try {
+                        HttpRequest requestLocal = HttpRequest.newBuilder()
+                                .uri(URI.create(url))
+                                .GET()
+                                .build();
 
-            List<CompletableFuture<T>> listFutures = Arrays.stream(urls)
-                    .map(url -> {
+                        return client.sendAsync(requestLocal, HttpResponse.BodyHandlers.ofString())
+                                .thenApply(res -> {
+                                    if (res.statusCode() >= 400) throw new RuntimeException("Error" + res.statusCode());
+                                    return res.body();
+                                })
+                                .thenApply(e -> gson.fromJson(e, c))
+                                .exceptionally(ex -> {
+                                    System.err.println("Error "+ ex.getMessage());
+                                    return null;
+                                });
+                    } catch (Exception e) {
+                        return CompletableFuture.completedFuture((T) null);
+                    }
+                }).toList();
 
-                                requestObject = HttpRequest.newBuilder()
-                                        .uri(URI.create(url))
-                                        .GET()
-                                        .build();
-                                return client.sendAsync(requestObject, HttpResponse.BodyHandlers.ofString())
-                                        .thenApply(HttpResponse::body)
-                                        .thenApply(e -> gson.fromJson(e, c));
-                            }
-                    ).toList();
-        return CompletableFuture.allOf(listFutures.toArray(new CompletableFuture[0])).thenApply(e-> listFutures.stream().map(CompletableFuture::join).toList());
+        return CompletableFuture.allOf(listFutures.toArray(new CompletableFuture[0]))
+                .thenApply(e -> listFutures.stream()
+                        .map(CompletableFuture::join)
+                        .filter(Objects::nonNull)
+                        .toList());
     }
-
 }
